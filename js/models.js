@@ -196,4 +196,37 @@ class User {
 			return null;
 		}
 	}
+
+	/******************************************************************************
+ * Marking/unmarking a story as a favorite
+ */
+
+	/** TO ADD DESCRIPTIVE TEXT
+ */
+
+	async addNewFavorite(storyId) {
+		const token = currentUser.loginToken;
+		const username = currentUser.username;
+
+		const results = await axios({
+			method: 'POST',
+			url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
+			data: { token }
+		});
+
+		this.favorites = results.data.user.favorites;
+	}
+
+	async deleteFavorite(storyId) {
+		const token = currentUser.loginToken;
+		const username = currentUser.username;
+
+		const results = await axios({
+			method: 'DELETE',
+			url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
+			data: { token }
+		});
+
+		this.favorites = results.data.user.favorites;
+	}
 }

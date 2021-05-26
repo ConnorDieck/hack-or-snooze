@@ -65,27 +65,6 @@ function logout(evt) {
 $navLogOut.on('click', logout);
 
 /******************************************************************************
- * Marking/unmarking a story as a favorite
- */
-
-/** TO ADD DESCRIPTIVE TEXT
- */
-
-async function addNewFavorite(username, storyId) {
-	if (!currentUser) {
-		return null;
-	}
-
-	const token = currentUser.loginToken;
-
-	const results = await axios({
-		method: 'POST',
-		url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
-		data: { token }
-	});
-}
-
-/******************************************************************************
  * Storing/recalling previously-logged-in-user with localStorage
  */
 
@@ -133,5 +112,80 @@ function updateUIOnUserLogin() {
 
 	$allStoriesList.show();
 
+	hidePageComponents();
 	updateNavOnLogin();
+	putStoriesOnPage();
+}
+
+/** Listens for click on favorite/remove favorite button. If the story is not already in currentUser's favorites, add it and change the text
+ */
+
+$allStoriesList.on('click', '.favBtn', async function(evt) {
+	const $favStory = $(this).closest('li')[0];
+	// console.log($favStory);
+	const favorites = currentUser.favorites;
+	// console.log(favorites);
+
+	// Check if the story is already in currentUser's favorites
+	const favExists = favorites.some((story) => {
+		return story.storyId === $favStory.id;
+	});
+	// console.log(favExists);
+
+	// If not, add it and change button text to "unfavorite". If it is, remove it and change button text to "favorite"
+	if (!favExists) {
+		await currentUser.addNewFavorite($favStory.id);
+		$(this).text('Unfavorite');
+	} else {
+		await currentUser.deleteFavorite($favStory.id);
+		$(this).text('Favorite');
+	}
+});
+
+/** Same functionality on the favorites list
+ */
+
+$favStoriesList.on('click', '.favBtn', async function(evt) {
+	const $favStory = $(this).closest('li')[0];
+	// console.log($favStory);
+	const favorites = currentUser.favorites;
+	// console.log(favorites);
+
+	// Check if the story is already in currentUser's favorites
+	const favExists = favorites.some((story) => {
+		return story.storyId === $favStory.id;
+	});
+	// console.log(favExists);
+
+	// If not, add it and change button text to "unfavorite". If it is, remove it and change button text to "favorite"
+	if (!favExists) {
+		await currentUser.addNewFavorite($favStory.id);
+		$(this).text('Unfavorite');
+	} else {
+		await currentUser.deleteFavorite($favStory.id);
+		$(this).text('Favorite');
+	}
+});
+
+/** Hide the list of all stories and show the list of just favorite stories */
+
+function showFavorites() {
+	console.debug('showFavorites');
+
+	hidePageComponents();
+	updateNavOnLogin();
+
+	const favorites = new StoryList(currentUser.favorites);
+	// console.log(favorites);
+
+	$favStoriesList.empty();
+
+	// loop through all of our favorite stories and generate HTML for them
+	for (let favorite of favorites.stories) {
+		const fav = new Story(favorite); // Transform favorite into an instance of Story to allow Story method use
+		const $favorite = generateStoryMarkup(fav);
+		$favStoriesList.append($favorite);
+	}
+
+	$favStoriesList.show();
 }

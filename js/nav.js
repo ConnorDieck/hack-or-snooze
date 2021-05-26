@@ -25,7 +25,7 @@ function navLoginClick(evt) {
 
 $navLogin.on('click', navLoginClick);
 
-/** Show story submit on click on "submit" */
+/** Show story submit form on click on "submit" */
 
 function navSubmitClick(evt) {
 	console.debug('navSubmitClick', evt);
@@ -34,6 +34,15 @@ function navSubmitClick(evt) {
 }
 
 $navSubmit.on('click', navSubmitClick);
+
+/** Show list of fav stories on click on "favorites" */
+
+function navFavoritesClick(evt) {
+	console.debug('navFavoritesClick', evt);
+	showFavorites();
+}
+
+$navFavorites.on('click', navFavoritesClick);
 
 /** When a user first logins in, update the navbar to reflect that. */
 
